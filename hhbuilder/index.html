@@ -50,7 +50,182 @@
         </div>
         <pre class="debug"></pre>
         <script>
-            // your code goes here ...
+            window.onload = function() {
+                setUpCSS();
+                setUpAddButton();
+                setUpHouseholdTable();
+                setUpDeleteRowsButton();
+            }
+
+            function setUpCSS() {
+                var style = document.getElementsByTagName("style")[0]
+                style.innerHTML += '.error { border: 1px solid red; }';
+            }
+
+            function setUpAddButton() {
+                var addButton = document.getElementsByClassName('add')[0];
+                addButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    clearErrors();
+
+                    if (validateInput()) {
+                        addPerson();
+                        resetInputs();
+                    }
+                    return(false);
+                });
+            }
+
+            function setUpHouseholdTable() {
+                var tableDiv = document.createElement('div');
+                tableDiv.id = 'tableDiv';
+                tableDiv.style.display = 'none';
+                tableDiv.style.padding = '1em';
+
+                var table = document.createElement("table");
+                table.id = "householdList";
+                table.style.padding = '1em';
+
+                var row = table.insertRow(0);
+
+                var ageTd = row.insertCell(0);
+                ageTd.innerHTML = "Age";
+
+                var relTd = row.insertCell(1);
+                relTd.innerHTML = "Relationship";
+
+                var smokingTd = row.insertCell(2);
+                smokingTd.innerHTML = "Smoker";
+
+                var removeTd = row.insertCell(3);
+                removeTd.innerHTML = "Delete?";
+
+                tableDiv.appendChild(table);
+
+                var deleteButton = document.createElement('button');
+                deleteButton.id = 'deleteRows';
+                deleteButton.type = 'button';
+                deleteButton.innerHTML = "Delete checked rows"
+
+                tableDiv.appendChild(deleteButton);
+
+                var body = document.getElementsByTagName('body')[0];
+                body.appendChild(tableDiv);
+            }
+
+            function setUpDeleteRowsButton() {
+                var deleteButton = document.getElementById('deleteRows');
+                deleteButton.addEventListener('click', function(e) {
+                    if (confirm("Are you sure you want to delete all CHECKED rows?")) {
+                        var table = tableElem();
+                        var rowCount = table.rows.length;
+
+                        for(var i = 1; i < rowCount; i++) {
+                            var row = table.rows[i];
+                            var deleteCell = row.cells.length - 1;
+                            var deleteCheckBox = row.cells[deleteCell].childNodes[0];
+
+                            if (deleteCheckBox.checked) {
+                                table.deleteRow(i);
+                                rowCount--;
+                                i--;
+                            }
+                        }
+                    }
+                });
+            }
+
+            function clearErrors() {
+              // Remove error msg if one exists
+              var errors = document.getElementById("errorMessage");
+              if (errors)
+                errors.parentNode.removeChild(errors);
+
+              document.getElementsByName("age")[0].className = '';
+              document.getElementsByName("rel")[0].className = '';
+            }
+
+            function setErrors(msg) {
+              var p = document.createElement("p");
+              p.className = 'error';
+              p.id = 'errorMessage'
+              p.innerHTML = msg;
+              var body = document.getElementsByTagName('body')[0];
+              body.insertBefore(p, body.firstChild);
+            }
+
+            function validateInput() {
+                var errorMsg = '';
+                if (!(ageElem().value > 0))
+                {
+                    ageElem().className = 'error';
+                    errorMsg = "Age is required, must be a number, and must be greater than zero (0)."
+                }
+
+                var relValue = relElem().selectedOptions[0].value;
+                if (relElem().value == "")
+                {
+                    if (errorMsg != '')
+                        errorMsg += "<br/><br/>"
+
+                    relElem().className = 'error';
+                    errorMsg += "You must choose a Relationship for this person."
+                }
+
+                if (errorMsg.length > 0) {
+                    setErrors(errorMsg);
+                    return(false);
+                } else {
+                    return(true);
+                }
+            }
+
+            function addPerson() {
+                var tableDiv = document.getElementById('tableDiv');
+                tableDiv.style.display = 'block';
+
+                var table = tableElem();
+                var rowCount = table.rows.length;
+                var row = table.insertRow(rowCount);
+
+                var ageTd = row.insertCell(0);
+                ageTd.innerHTML = ageElem().value;
+
+                var relTd = row.insertCell(1);
+                relTd.innerHTML = relElem().value;
+
+                var smokingTd = row.insertCell(2);
+                smokingTd.innerHTML = smokerElem().checked ? "Yes" : "No";
+
+                var removeTd = row.insertCell(3);
+                var removeInput = document.createElement("input");
+                removeInput.type = "checkbox";
+                removeTd.appendChild(removeInput);
+            }
+
+            function resetInputs() {
+                ageElem().value = '';
+                relElem().value = '';
+                smokerElem().checked = false;
+                clearErrors();
+            }
+
+            // HELPER METHODS
+            function ageElem() {
+                return document.getElementsByName("age")[0];
+            }
+
+            function relElem() {
+                return document.getElementsByName("rel")[0];
+            }
+
+            function smokerElem() {
+                return document.getElementsByName("smoker")[0];
+            }
+
+            function tableElem() {
+                return document.getElementById('householdList');
+            }
         </script>
     </body>
 </html>
