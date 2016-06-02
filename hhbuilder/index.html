@@ -51,18 +51,18 @@
         <pre class="debug"></pre>
         <script>
             window.onload = function() {
-                setUpCSS();
-                setUpAddButton();
-                setUpHouseholdTable();
-                setUpDeleteRowsButton();
+                setupCSS();
+                setupAddButton();
+                setupHouseholdTable();
+                setupDeleteRowsButton();
             }
 
-            function setUpCSS() {
+            function setupCSS() {
                 var style = document.getElementsByTagName("style")[0]
                 style.innerHTML += '.error { border: 1px solid red; }';
             }
 
-            function setUpAddButton() {
+            function setupAddButton() {
                 var addButton = document.getElementsByClassName('add')[0];
                 addButton.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -76,7 +76,7 @@
                 });
             }
 
-            function setUpHouseholdTable() {
+            function setupHouseholdTable() {
                 var tableDiv = document.createElement('div');
                 tableDiv.id = 'tableDiv';
                 tableDiv.style.display = 'none';
@@ -113,7 +113,7 @@
                 body.appendChild(tableDiv);
             }
 
-            function setUpDeleteRowsButton() {
+            function setupDeleteRowsButton() {
                 var deleteButton = document.getElementById('deleteRows');
                 deleteButton.addEventListener('click', function(e) {
                     if (confirm("Are you sure you want to delete all CHECKED rows?")) {
