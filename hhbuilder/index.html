@@ -55,7 +55,10 @@
                 setupAddButton();
                 setupHouseholdTable();
                 setupDeleteRowsButton();
+                setupSubmitButton();
             }
+
+            // Setup methods
 
             function setupCSS() {
                 var style = document.getElementsByTagName("style")[0]
@@ -115,6 +118,7 @@
 
             function setupDeleteRowsButton() {
                 var deleteButton = document.getElementById('deleteRows');
+
                 deleteButton.addEventListener('click', function(e) {
                     if (confirm("Are you sure you want to delete all CHECKED rows?")) {
                         var table = tableElem();
@@ -135,20 +139,40 @@
                 });
             }
 
-            function clearErrors() {
-              // Remove error msg if one exists
-              var errors = document.getElementById("errorMessage");
-              if (errors)
-                errors.parentNode.removeChild(errors);
+            function setupSubmitButton() {
+                var submitButton = document.querySelectorAll("button[type='submit']")[0];
 
-              document.getElementsByName("age")[0].className = '';
-              document.getElementsByName("rel")[0].className = '';
+                submitButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    clearErrors();
+
+                    submitJson();
+
+                    setMessage("Your data has been submitted");
+
+                    return(false);
+                });
             }
 
-            function setErrors(msg) {
+            // Application methods
+
+            function clearErrors() {
+                var errors = document.getElementById("message");
+                if (errors)
+                    errors.parentNode.removeChild(errors);
+
+                document.getElementsByName("age")[0].className = '';
+                document.getElementsByName("rel")[0].className = '';
+            }
+
+            function setMessage(msg, error) {
               var p = document.createElement("p");
-              p.className = 'error';
-              p.id = 'errorMessage'
+              p.id = 'message';
+
+              if (error) {
+                  p.className = 'error';
+              }
+
               p.innerHTML = msg;
               var body = document.getElementsByTagName('body')[0];
               body.insertBefore(p, body.firstChild);
@@ -173,7 +197,7 @@
                 }
 
                 if (errorMsg.length > 0) {
-                    setErrors(errorMsg);
+                    setMessage(errorMsg, true);
                     return(false);
                 } else {
                     return(true);
@@ -208,6 +232,30 @@
                 relElem().value = '';
                 smokerElem().checked = false;
                 clearErrors();
+            }
+
+            function submitJson() {
+                var debug = document.getElementsByClassName("debug")[0];
+                var table = tableElem();
+                var rowCount = table.rows.length;
+                var headers = table.rows[0];
+                var data = [];
+
+                for (var i = 1; i < rowCount; i++) {
+                    var rowData = {};
+                    var row = table.rows[i];
+
+                    for (var j = 0; j < headers.cells.length - 1; j++) {
+                        var key = headers.cells[j].childNodes[0].nodeValue;
+                        var val = row.cells[j].childNodes[0].nodeValue;
+
+                        rowData[key] = val;
+                    }
+
+                    data.push(rowData);
+                }
+
+                debug.innerHTML = JSON.stringify(data);
             }
 
             // HELPER METHODS
